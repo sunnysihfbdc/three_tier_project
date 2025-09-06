@@ -57,7 +57,7 @@ function App() {
         />
       </div>
 
-      <button onClick={register}>Register</button>
+      <button onClick={register}>REGISTER her for bharat sarkar</button>
       <button onClick={login}>Login</button>
       <button onClick={getMe} disabled={!token}>
         Get My Info
