@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  db:
+    image: sunny521/three-tier-db:latest
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  backend:
+    image: sunny521/three-tier-backend:latest
+    container_name: backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: testdb
+      JWT_SECRET: 8c569d6dada02e08820aa777428c50105e03f6e288417082788c940f47def004f40059edb7165fc48e04839d0c467888019e6a58f6adb3d79115eeac9fb42262
+    ports:
+      - "4000:4000"
+    networks:
+      - app-network
+
+  frontend:
+    image: sunny521/three-tier-frontend:latest
+    container_name: frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+
