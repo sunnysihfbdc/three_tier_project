@@ -76,8 +76,8 @@ jobs:
           script: |
             cd ~/three_tier_project
             git pull origin main
-            /usr/bin/docker-compose -f docker-compose.prod.yml down
-            /usr/bin/docker-compose -f docker-compose.prod.yml pull
-            /usr/bin/docker-compose -f docker-compose.prod.yml up -d --build
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d --build
 
 
