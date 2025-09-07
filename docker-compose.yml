@@ -5,10 +5,10 @@ services:
     build: ./db
     container_name: db
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: testdb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root              # root password
+      MYSQL_DATABASE: testdb                 # database to create
+      MYSQL_USER: appuser                    # ✅ use non-root user
+      MYSQL_PASSWORD: appuserpass            # ✅ user password
     volumes:
       - db_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -22,8 +22,8 @@ services:
       - db
     environment:
       DB_HOST: db
-      DB_USER: root
-      DB_PASSWORD: root
+      DB_USER: appuser                       # ✅ updated
+      DB_PASSWORD: appuserpass               # ✅ updated
       DB_NAME: testdb
       JWT_SECRET: 8c569d6dada02e08820aa777428c50105e03f6e288417082788c940f47def004f40059edb7165fc48e04839d0c467888019e6a58f6adb3d79115eeac9fb42262
     ports:
