@@ -1,6 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const jwt = require("8c569d6dada02e08820aa777428c50105e03f6e288417082788c940f47def004f40059edb7165fc48e04839d0c467888019e6a58f6adb3d79115eeac9fb42262");
+const jwt = require("jsonwebtoken");
 const pool = require("../db");
 const authMiddleware = require("../middleware/auth");
 
@@ -42,15 +42,21 @@ router.post("/login", async (req, res) => {
     const [rows] = await pool.query("SELECT * FROM users WHERE email = ?", [
       email,
     ]);
-    if (rows.length === 0) return res.status(400).json({ msg: "Invalid credentials" });
+    if (rows.length === 0)
+      return res.status(400).json({ msg: "Invalid credentials" });
 
     const user = rows[0];
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
+    // Use env secret if available, otherwise fall back to your provided secret
+    const secret =
+      process.env.JWT_SECRET ||
+      "8c569d6dada02e08820aa777428c50105e03f6e288417082788c940f47def004f40059edb7165fc48e04839d0c467888019e6a58f6adb3d79115eeac9fb42262";
+
     const token = jwt.sign(
       { id: user.id, username: user.username },
-      process.env.JWT_SECRET || "supersecret",
+      secret,
       { expiresIn: "1h" }
     );
 
@@ -64,10 +70,12 @@ router.post("/login", async (req, res) => {
 // Protected route
 router.get("/me", authMiddleware, async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT id, username, email FROM users WHERE id = ?", [
-      req.user.id,
-    ]);
-    if (rows.length === 0) return res.status(404).json({ msg: "User not found" });
+    const [rows] = await pool.query(
+      "SELECT id, username, email FROM users WHERE id = ?",
+      [req.user.id]
+    );
+    if (rows.length === 0)
+      return res.status(404).json({ msg: "User not found" });
 
     res.json(rows[0]);
   } catch (err) {
